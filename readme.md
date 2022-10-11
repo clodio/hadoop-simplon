@@ -116,6 +116,7 @@ CREATE TABLE localities.cities_2022_partitionned_by_year_parquet(code_commune_in
 /* pas forcement nécessaire : ALTER TABLE localities.cities_2022_partitionned_by_year_parquet Add Partition (year=2022); */
 INSERT INTO TABLE localities.cities_2022_partitionned_by_year_parquet PARTITION(year=2022) SELECT * from localities.cities_2022;
 ```
+
 ## Tables internal vs external
 
 | Internal | External |
