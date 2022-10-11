@@ -116,3 +116,12 @@ CREATE TABLE localities.cities_2022_partitionned_by_year_parquet(code_commune_in
 /* pas forcement nécessaire : ALTER TABLE localities.cities_2022_partitionned_by_year_parquet Add Partition (year=2022); */
 INSERT INTO TABLE localities.cities_2022_partitionned_by_year_parquet PARTITION(year=2022) SELECT * from localities.cities_2022;
 ```
+## Tables internal vs external
+
+| Internal | External |
+|---|---|
+|  les tables SONT mises dans le dossier warehouse | les tables NE SONT PAS mises dans le dossier warehouse |
+| un drop supprime les tables et les metadatas | le drop supprime seulement les metadatas |
+| TRUNCATE possible | pas de TRUNCATE |
+| ACID | pas ACID |
+| Query Cache | pas de query Cache |
