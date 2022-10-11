@@ -83,7 +83,7 @@ sudo chown -R data_analyst:data_analysts /user/data_analyst
 
 ### dans Hive créer une table cities_2022 qui pointe sur votre fichier cities_2022.csv
 
-/!\ dans le cas de creation de tables internes et pas EXTERNAL, les données de hdfs sont supprimées
+/!\ dans le cas de création de tables internes et pas EXTERNAL, les données de hdfs sont supprimées
 
 ```hive
 CREATE SCHEMA localities;
@@ -96,12 +96,13 @@ LOAD DATA INPATH '/localities/2022/10/csv/laposte_hexasmal.csv' OVERWRITE INTO T
 ### dans Hive créer une table cities_2022_parquet qui stockera les données de cities_2022 mais au format parquet
 
 ```hive
-create table localities.cities_2022_parquet(code_commune_insee string, nom_de_la_commune string, code_postal string, ligne_5 string, libelle_d_acheminement string, coordonnees_gps string) stored as Parquet;
+CREATE TABLE localities.cities_2022_parquet(code_commune_insee string, nom_de_la_commune string, code_postal string, ligne_5 string, libelle_d_acheminement string, coordonnees_gps string) STORED AS Parquet;
+```
 
 ### Utiliser Hive pour peupler la table cities_2022_parquet à partir de la table cities_2022
 
 ```hive
-insert into table localities.cities_2022_parquet select * from localities.cities_2022;
+INSERT INTO TABLE localities.cities_2022_parquet SELECT * from localities.cities_2022;
 ```
 
 ### Hive Optionnel
@@ -109,3 +110,9 @@ insert into table localities.cities_2022_parquet select * from localities.cities
 * dans Hive définir une table cities partitionné par année qui contiendra les données du fichiers cities_2022 au format parquet
 * ajouter la partition pour l’année 2022
 * peupler la table à l’aide de la table cities_2022
+
+```hive
+CREATE TABLE localities.cities_2022_partitionned_by_year_parquet(code_commune_insee string, nom_de_la_commune string, code_postal string, ligne_5 string, libelle_d_acheminement string, coordonnees_gps string) PARTITIONED BY (year int) STORED AS Parquet;
+/* pas forcement nécessaire : ALTER TABLE localities.cities_2022_partitionned_by_year_parquet Add Partition (year=2022); */
+INSERT INTO TABLE localities.cities_2022_partitionned_by_year_parquet PARTITION(year=2022) SELECT * from localities.cities_2022;
+```
