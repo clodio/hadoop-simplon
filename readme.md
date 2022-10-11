@@ -1,4 +1,5 @@
 # Hadoop
+
 ## En binôme définir une arborescence pour le stockage dans du fichier (Temps 1 : durée 15min)
 
 * localities/YYYY/MM
@@ -41,25 +42,27 @@ Lancer le système de stockage distribué à l’aide du script startup-hadoop.s
 * Envoyer ce fichier sur HDFS
 
 ```bash
-hdfs dfs -mkdir localities
-hdfs dfs -mkdir localities/2022
-hdfs dfs -mkdir localities/2022/10
-hdfs dfs -mkdir localities/2022/10/headers
-hdfs dfs -mkdir localities/2022/10/csv
+hdfs dfs -mkdir /localities
+hdfs dfs -mkdir /localities/2022
+hdfs dfs -mkdir /localities/2022/10
+hdfs dfs -mkdir /localities/2022/10/headers
+hdfs dfs -mkdir /localities/2022/10/csv
 
 rm -f laposte_hexasmal.csv
+rm -f laposte_hexasmal_headers.csv
+rm -f laposte_hexasmal_content.csv
 hdfs dfs -get laposte_hexasmal.csv 
 head -n1 laposte_hexasmal.csv > laposte_hexasmal_headers.csv
-hdfs dfs -put laposte_hexasmal_headers.csv localities/2022/10/headers/laposte_hexasmal.csv
+hdfs dfs -put laposte_hexasmal_headers.csv /localities/2022/10/headers/laposte_hexasmal.csv
 tail -n +2 laposte_hexasmal.csv > laposte_hexasmal_content.csv
-hdfs dfs -put laposte_hexasmal_csv.csv localities/2022/10/csv/laposte_hexasmal.csv
+hdfs dfs -put laposte_hexasmal_content.csv /localities/2022/10/csv/laposte_hexasmal.csv
 rm -f laposte_hexasmal.csv
 rm -f laposte_hexasmal_headers.csv
 rm -f laposte_hexasmal_content.csv
 
 ```
 
-### Optionnel
+### HDFS Optionnel
 
 * sur la machine local créer un groupe data_analyst
 * sur la machine local créer un utilisateur data_analyst et le ratacher au groupe data_analyst
@@ -78,11 +81,31 @@ sudo chown -R data_analyst:data_analysts /user/data_analyst
 
 ## Temps 4 Partie 2 Hive (durée 1H30)
 
-dans Hive créer une table cities_2022 qui pointe sur votre fichier cities_2022.csv
-dans Hive créer une table cities_2022_parquet qui stockera les données de cities_2022 mais au format parquet
-Utiliser Hive pour peupler la table cities_2022_parquet à partir de la table cities_2022
-Optionnel
-dans Hive définir une table cities partitionné par année qui contiendra les données du fichiers cities_2022 au format parquet
-ajouter la partition pour l’année 2022
-peupler la table à l’aide de la table cities_2022
+### dans Hive créer une table cities_2022 qui pointe sur votre fichier cities_2022.csv
 
+/!\ dans le cas de creation de tables internes et pas EXTERNAL, les données de hdfs sont supprimées
+
+```hive
+CREATE SCHEMA localities;
+DROP TABLE localities.cities_2022;
+CREATE EXTERNAL TABLE IF NOT EXISTS  localities.cities_2022 ( code_commune_insee String, nom_de_la_commune String, code_postal String, ligne_5 String, libelle_d_acheminement String, coordonnees_gps String) ROW FORMAT DELIMITED FIELDS TERMINATED BY ';' LINES TERMINATED BY '\n';
+
+LOAD DATA INPATH '/localities/2022/10/csv/laposte_hexasmal.csv' OVERWRITE INTO TABLE localities.cities_2022;
+```
+
+### dans Hive créer une table cities_2022_parquet qui stockera les données de cities_2022 mais au format parquet
+
+```hive
+create table localities.cities_2022_parquet(code_commune_insee string, nom_de_la_commune string, code_postal string, ligne_5 string, libelle_d_acheminement string, coordonnees_gps string) stored as Parquet;
+
+### Utiliser Hive pour peupler la table cities_2022_parquet à partir de la table cities_2022
+
+```hive
+insert into table localities.cities_2022_parquet select * from localities.cities_2022;
+```
+
+### Hive Optionnel
+
+* dans Hive définir une table cities partitionné par année qui contiendra les données du fichiers cities_2022 au format parquet
+* ajouter la partition pour l’année 2022
+* peupler la table à l’aide de la table cities_2022
