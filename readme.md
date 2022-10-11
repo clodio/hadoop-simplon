@@ -37,7 +37,7 @@ Lancer le système de stockage distribué à l’aide du script startup-hadoop.s
 
 * Récupérer le fichier depuis HDFS sur votre poste local
 * Extraire du fichier la 1er ligne contenant l’en-tête dans un fichier nommé cities_headers.txt
-* En local créer un fichiers cities_2022.csv ne contenant pas la ligne d’en-tête
+* En local créer un fichiers cities_2022.csv (laposte_hexasmal_content.csv) ne contenant pas la ligne d’en-tête
 * Sur HDFS créer l’arborescence cible qui contiendra votre fichier
 * Envoyer ce fichier sur HDFS
 
@@ -68,7 +68,7 @@ rm -f laposte_hexasmal_content.csv
 * sur la machine local créer un utilisateur data_analyst et le ratacher au groupe data_analyst
 * créer un répertoire data_analyst dans le dossier /user de HDFS
 * sur HDFS changer le propriétaire et groupe du dossier /user/data_analyst pour data_analyst
-* déplacer le fichier cities_2022.csv et faire en sorte que seule les data_analyst puissent y accéder en lecture uniquement
+* déplacer le fichier cities_2022.csv (laposte_hexasmal_content.csv) et faire en sorte que seule les data_analyst puissent y accéder en lecture uniquement
 
 ```bash
 sudo groupadd data_analysts
@@ -77,6 +77,8 @@ sudo usermod -a -G data_analysts data_analyst
 sudo mkdir /user
 sudo mkdir /user/data_analyst
 sudo chown -R data_analyst:data_analysts /user/data_analyst
+sudo cp laposte_hexasmal_content.csv /user/data_analyst/laposte_hexasmal_content.csv
+sudo chown -R data_analyst:data_analysts /user/data_analyst/laposte_hexasmal_content.csv
 ```
 
 ## Temps 4 Partie 2 Hive (durée 1H30)
