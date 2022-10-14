@@ -1,5 +1,9 @@
 # Hadoop
 
+## prérequis
+
+bien penser à lancer start-hadoop.sh  au démarrage
+
 ## En binôme définir une arborescence pour le stockage dans du fichier (Temps 1 : durée 15min)
 
 * localities/YYYY/MM
